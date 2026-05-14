@@ -54,13 +54,15 @@ function ProgressBar({ pct }: { pct: number }) {
 }
 
 function WishlistPage() {
-  const { streamer, wishlist } = Route.useLoaderData();
+  const data = Route.useLoaderData()!;
+  const streamer = data.streamer;
+  const wishlist: WishlistItem[] = data.wishlist;
   const [openTip, setOpenTip] = useState(false);
   const [activeItem, setActiveItem] = useState<WishlistItem | null>(null);
   const { sentCount } = useDemoWallet();
 
-  const totalGoal = wishlist.reduce((a, w) => a + w.goal, 0);
-  const totalRaised = wishlist.reduce((a, w) => a + w.raised, 0);
+  const totalGoal = wishlist.reduce((a: number, w: WishlistItem) => a + w.goal, 0);
+  const totalRaised = wishlist.reduce((a: number, w: WishlistItem) => a + w.raised, 0);
 
   return (
     <PaperPage className="pb-12 pt-8">
@@ -89,7 +91,7 @@ function WishlistPage() {
         </div>
         <div className="paper-card rounded-xl p-4 rotate-doodle-3">
           <div className="font-label text-xs uppercase text-ink-soft">items left</div>
-          <div className="font-hand text-4xl text-ink">{wishlist.filter((w) => w.raised < w.goal).length} <span className="font-mono text-base">/ {wishlist.length}</span></div>
+          <div className="font-hand text-4xl text-ink">{wishlist.filter((w: WishlistItem) => w.raised < w.goal).length} <span className="font-mono text-base">/ {wishlist.length}</span></div>
         </div>
       </div>
 
@@ -97,7 +99,7 @@ function WishlistPage() {
       <div className="mt-12">
         <h2 className="font-hand text-4xl text-ink"><MarkerUnderline>the list</MarkerUnderline></h2>
         <div className="mt-6 grid gap-8 md:grid-cols-2">
-          {wishlist.map((item, i) => {
+          {wishlist.map((item: WishlistItem, i: number) => {
             const pct = (item.raised / item.goal) * 100;
             const done = pct >= 100;
             return (

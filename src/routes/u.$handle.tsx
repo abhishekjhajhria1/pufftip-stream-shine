@@ -44,7 +44,8 @@ const EMOJIS: Record<string, string> = {
 };
 
 function StreamerPage() {
-  const { streamer } = Route.useLoaderData();
+  const data = Route.useLoaderData();
+  const streamer = data!.streamer;
   const tips = useDemoWallet((s) => s.tipsByStreamer[streamer.handle] ?? []);
   const [open, setOpen] = useState(false);
 
