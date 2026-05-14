@@ -9,13 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ObsRouteImport } from './routes/obs'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
+import { Route as UHandleWishlistRouteImport } from './routes/u.$handle.wishlist'
 
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObsRoute = ObsRouteImport.update({
+  id: '/obs',
+  path: '/obs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,44 +47,107 @@ const UHandleRoute = UHandleRouteImport.update({
   path: '/u/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UHandleWishlistRoute = UHandleWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => UHandleRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
-  '/u/$handle': typeof UHandleRoute
+  '/obs': typeof ObsRoute
+  '/pricing': typeof PricingRoute
+  '/u/$handle': typeof UHandleRouteWithChildren
+  '/u/$handle/wishlist': typeof UHandleWishlistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
-  '/u/$handle': typeof UHandleRoute
+  '/obs': typeof ObsRoute
+  '/pricing': typeof PricingRoute
+  '/u/$handle': typeof UHandleRouteWithChildren
+  '/u/$handle/wishlist': typeof UHandleWishlistRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
-  '/u/$handle': typeof UHandleRoute
+  '/obs': typeof ObsRoute
+  '/pricing': typeof PricingRoute
+  '/u/$handle': typeof UHandleRouteWithChildren
+  '/u/$handle/wishlist': typeof UHandleWishlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/explore' | '/u/$handle'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/explore'
+    | '/obs'
+    | '/pricing'
+    | '/u/$handle'
+    | '/u/$handle/wishlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore' | '/u/$handle'
-  id: '__root__' | '/' | '/explore' | '/u/$handle'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/explore'
+    | '/obs'
+    | '/pricing'
+    | '/u/$handle'
+    | '/u/$handle/wishlist'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/explore'
+    | '/obs'
+    | '/pricing'
+    | '/u/$handle'
+    | '/u/$handle/wishlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
-  UHandleRoute: typeof UHandleRoute
+  ObsRoute: typeof ObsRoute
+  PricingRoute: typeof PricingRoute
+  UHandleRoute: typeof UHandleRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/obs': {
+      id: '/obs'
+      path: '/obs'
+      fullPath: '/obs'
+      preLoaderRoute: typeof ObsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore': {
       id: '/explore'
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,13 +164,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/u/$handle/wishlist': {
+      id: '/u/$handle/wishlist'
+      path: '/wishlist'
+      fullPath: '/u/$handle/wishlist'
+      preLoaderRoute: typeof UHandleWishlistRouteImport
+      parentRoute: typeof UHandleRoute
+    }
   }
 }
 
+interface UHandleRouteChildren {
+  UHandleWishlistRoute: typeof UHandleWishlistRoute
+}
+
+const UHandleRouteChildren: UHandleRouteChildren = {
+  UHandleWishlistRoute: UHandleWishlistRoute,
+}
+
+const UHandleRouteWithChildren =
+  UHandleRoute._addFileChildren(UHandleRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
-  UHandleRoute: UHandleRoute,
+  ObsRoute: ObsRoute,
+  PricingRoute: PricingRoute,
+  UHandleRoute: UHandleRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
