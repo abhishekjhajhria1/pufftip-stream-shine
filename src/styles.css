@@ -85,7 +85,7 @@
   --ring: var(--marker-blue);
 
   --font-hand: 'Caveat', 'Comic Sans MS', cursive;
-  --font-label: 'Patrick Hand', 'Comic Sans MS', cursive;
+  --font-label: 'Kalam', 'Patrick Hand', 'Comic Sans MS', cursive;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   --shadow-paper: 2px 3px 0 oklch(0.22 0.02 260 / 0.08), 6px 8px 16px -8px oklch(0.22 0.02 260 / 0.18);
