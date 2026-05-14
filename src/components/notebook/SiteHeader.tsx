@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useDemoWallet } from "@/lib/useDemoWallet";
 import { useState } from "react";
 import { StickyNote, SmokeCurl } from "./primitives";
+import { useTheme } from "@/lib/useTheme";
 
 const NAV = [
   { to: "/", label: "home" },
@@ -16,6 +17,7 @@ export function SiteHeader() {
   const { balance, connected, fakeConnect } = useDemoWallet();
   const [showConnect, setShowConnect] = useState(false);
   const [open, setOpen] = useState(false);
+  const { theme, toggle } = useTheme();
 
   return (
     <>
@@ -48,6 +50,13 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggle}
+              title={`switch to ${theme === "notebook" ? "studio" : "notebook"} theme`}
+              className="rotate-doodle-1 rounded-full border-2 border-ink bg-card px-2.5 py-1 font-label text-xs uppercase tracking-wider text-ink hover:bg-marker-yellow"
+            >
+              {theme === "notebook" ? "✎ notebook" : "◐ studio"}
+            </button>
             <div className="hidden rotate-doodle-1 items-center gap-1.5 rounded-full border-2 border-dashed border-ink/40 bg-paper px-3 py-1 sm:flex">
               <span className="size-2 rounded-full bg-marker-green animate-ember" />
               <span className="font-label text-sm text-ink">{balance.toFixed(2)} SOL</span>
