@@ -5,7 +5,7 @@ import { TipModal } from "@/components/notebook/TipModal";
 import { getStreamer, WISHLISTS, type WishlistItem } from "@/lib/mockData";
 import { useDemoWallet } from "@/lib/useDemoWallet";
 
-export const Route = createFileRoute("/u/$handle/wishlist")({
+export const Route = createFileRoute("/u/$handle_/wishlist")({
   head: ({ params }) => {
     const s = getStreamer(params.handle);
     return {

@@ -15,7 +15,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
-import { Route as UHandleWishlistRouteImport } from './routes/u.$handle.wishlist'
+import { Route as UHandleWishlistRouteImport } from './routes/u.$handle_.wishlist'
 
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
@@ -48,9 +48,9 @@ const UHandleRoute = UHandleRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const UHandleWishlistRoute = UHandleWishlistRouteImport.update({
-  id: '/wishlist',
-  path: '/wishlist',
-  getParentRoute: () => UHandleRoute,
+  id: '/u/$handle_/wishlist',
+  path: '/u/$handle/wishlist',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -59,7 +59,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/obs': typeof ObsRoute
   '/pricing': typeof PricingRoute
-  '/u/$handle': typeof UHandleRouteWithChildren
+  '/u/$handle': typeof UHandleRoute
   '/u/$handle/wishlist': typeof UHandleWishlistRoute
 }
 export interface FileRoutesByTo {
@@ -68,7 +68,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/obs': typeof ObsRoute
   '/pricing': typeof PricingRoute
-  '/u/$handle': typeof UHandleRouteWithChildren
+  '/u/$handle': typeof UHandleRoute
   '/u/$handle/wishlist': typeof UHandleWishlistRoute
 }
 export interface FileRoutesById {
@@ -78,8 +78,8 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/obs': typeof ObsRoute
   '/pricing': typeof PricingRoute
-  '/u/$handle': typeof UHandleRouteWithChildren
-  '/u/$handle/wishlist': typeof UHandleWishlistRoute
+  '/u/$handle': typeof UHandleRoute
+  '/u/$handle_/wishlist': typeof UHandleWishlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,7 +108,7 @@ export interface FileRouteTypes {
     | '/obs'
     | '/pricing'
     | '/u/$handle'
-    | '/u/$handle/wishlist'
+    | '/u/$handle_/wishlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,7 +117,8 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   ObsRoute: typeof ObsRoute
   PricingRoute: typeof PricingRoute
-  UHandleRoute: typeof UHandleRouteWithChildren
+  UHandleRoute: typeof UHandleRoute
+  UHandleWishlistRoute: typeof UHandleWishlistRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -164,26 +165,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/u/$handle/wishlist': {
-      id: '/u/$handle/wishlist'
-      path: '/wishlist'
+    '/u/$handle_/wishlist': {
+      id: '/u/$handle_/wishlist'
+      path: '/u/$handle/wishlist'
       fullPath: '/u/$handle/wishlist'
       preLoaderRoute: typeof UHandleWishlistRouteImport
-      parentRoute: typeof UHandleRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface UHandleRouteChildren {
-  UHandleWishlistRoute: typeof UHandleWishlistRoute
-}
-
-const UHandleRouteChildren: UHandleRouteChildren = {
-  UHandleWishlistRoute: UHandleWishlistRoute,
-}
-
-const UHandleRouteWithChildren =
-  UHandleRoute._addFileChildren(UHandleRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -191,7 +181,8 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   ObsRoute: ObsRoute,
   PricingRoute: PricingRoute,
-  UHandleRoute: UHandleRouteWithChildren,
+  UHandleRoute: UHandleRoute,
+  UHandleWishlistRoute: UHandleWishlistRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
