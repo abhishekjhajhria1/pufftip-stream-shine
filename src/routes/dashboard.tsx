@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PaperPage, WashiTape, Highlight, Polaroid, Stamp, StickyNote, MarkerUnderline, Sketch } from "@/components/notebook/primitives";
 import { STREAMERS, SEED_TIPS } from "@/lib/mockData";
+import { StreamerCustomizer } from "@/components/notebook/StreamerCustomizer";
+import { useStreamerConfig } from "@/lib/useStreamerConfig";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -19,7 +21,8 @@ const BARS = [3.2, 5.8, 4.1, 7.6, 12.4, 9.1, 6.3];
 const MAX_BAR = Math.max(...BARS);
 
 function Dashboard() {
-  const me = STREAMERS[0];
+  const ownerHandle = useStreamerConfig((s) => s.ownerHandle);
+  const me = STREAMERS.find((s) => s.handle === ownerHandle) ?? STREAMERS[0];
   const tips = SEED_TIPS[me.handle] ?? [];
   const weekTotal = BARS.reduce((a, b) => a + b, 0);
 
@@ -138,6 +141,11 @@ function Dashboard() {
             <p className="mt-2 text-center font-label text-xs text-ink-soft">↑ that's how tips appear on stream</p>
           </div>
         </div>
+      </div>
+
+      {/* Page customizer */}
+      <div id="customize" className="mt-12">
+        <StreamerCustomizer handle={me.handle} />
       </div>
 
       {/* Switch streamer */}
