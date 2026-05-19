@@ -43,7 +43,7 @@ export function TipModal({
           {sent ? (
             <div className="py-6 text-center">
               <div className="font-hand text-4xl text-ink">sent ✈️</div>
-              <p className="mt-2 font-label text-base text-ink">your puff is on its way to {streamer.name}.</p>
+              <p className="mt-2 font-label text-base text-ink">{cfg.thankYouMessage || `your puff is on its way to ${streamer.name}.`}</p>
             </div>
           ) : (
             <>
