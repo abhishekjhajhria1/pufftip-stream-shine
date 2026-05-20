@@ -11,6 +11,9 @@ import {
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/notebook/SiteHeader";
 import { SiteFooter } from "@/components/notebook/SiteFooter";
+import { PuffyMascot } from "@/components/notebook/PuffyMascot";
+import { CommandPalette } from "@/components/notebook/CommandPalette";
+import { PageTransition } from "@/components/notebook/PageTransition";
 
 function NotFoundComponent() {
   return (
@@ -120,8 +123,14 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
-        <main className="flex-1"><Outlet /></main>
+        <main className="flex-1">
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </main>
         <SiteFooter />
+        <PuffyMascot />
+        <CommandPalette />
       </div>
     </QueryClientProvider>
   );

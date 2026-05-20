@@ -377,4 +377,21 @@
     100% { transform: scale(1) rotate(var(--r, 0deg)); opacity: 1; }
   }
   .animate-pop { animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  /* Paper-burst confetti pieces — driven by --dx/--dy/--rot inline vars */
+  @keyframes burst {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--dx, 0), calc(var(--dy, 0) + 220px)) rotate(var(--rot, 360deg)); opacity: 0; }
+  }
+  .animate-burst { animation: burst 1.4s cubic-bezier(0.18, 0.7, 0.3, 1) forwards; }
+
+  /* Page-turn transition: fade-in keyframe replays on key change */
+  @keyframes page-turn-in {
+    from { opacity: 0; transform: translateY(8px) rotate(-0.4deg); }
+    to   { opacity: 1; transform: translateY(0)   rotate(0); }
+  }
+  .page-turn-in { animation: page-turn-in 260ms ease-out both; transform-origin: top center; }
+  @media (prefers-reduced-motion: reduce) {
+    .page-turn-in, .animate-burst, .animate-pop, .animate-ember, .animate-smoke, .animate-wobble { animation: none !important; transition: none !important; }
+  }
 }

@@ -3,6 +3,7 @@ import { useDemoWallet } from "@/lib/useDemoWallet";
 import { StickyNote } from "./primitives";
 import type { Streamer } from "@/lib/mockData";
 import { getConfig, useStreamerConfig } from "@/lib/useStreamerConfig";
+import { PaperBurst } from "./PaperBurst";
 
 export function TipModal({
   streamer,
@@ -21,6 +22,7 @@ export function TipModal({
   const [amount, setAmount] = useState(quick[1] ?? quick[0] ?? 0.5);
   const [msg, setMsg] = useState("");
   const [sent, setSent] = useState(false);
+  const [burst, setBurst] = useState(0);
   const { balance, addTip } = useDemoWallet();
 
   if (!open) return null;
@@ -29,6 +31,7 @@ export function TipModal({
     if (amount < minTip || amount > balance) return;
     addTip(streamer.handle, amount, msg);
     setSent(true);
+    setBurst((n) => n + 1);
     setTimeout(() => {
       setSent(false);
       setMsg("");
@@ -38,7 +41,8 @@ export function TipModal({
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()}>
+      <div className="relative" onClick={(e) => e.stopPropagation()}>
+        <PaperBurst trigger={burst} />
         <StickyNote color={sent ? "green" : "yellow"} rotate={-2} className="w-[min(420px,calc(100vw-2rem))]">
           {sent ? (
             <div className="py-6 text-center">

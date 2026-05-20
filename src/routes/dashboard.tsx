@@ -63,14 +63,14 @@ function Dashboard() {
             <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>tips this week</MarkerUnderline></h3>
             <span className="font-label text-sm text-ink-soft">drawn by hand, in marker</span>
           </div>
-          <div className="mt-6 flex h-64 items-end justify-between gap-3 border-b-2 border-l-2 border-ink/40 pl-3 pb-2">
+          <div className="mt-6 flex h-64 items-stretch justify-between gap-3 border-b-2 border-l-2 border-ink/40 pl-3 pb-2">
             {BARS.map((b, i) => (
-              <div key={i} className="relative flex flex-1 flex-col items-center">
-                <span className="absolute -top-6 font-mono text-xs text-ink-soft">{b}</span>
+              <div key={i} className="relative flex flex-1 flex-col items-center justify-end">
+                <span className="font-mono text-xs text-ink-soft">{b}</span>
                 <div
-                  className="w-full rounded-t-md border-2 border-ink"
+                  className="mt-1 w-full rounded-t-md border-2 border-ink"
                   style={{
-                    height: `${(b / MAX_BAR) * 100}%`,
+                    height: `${(b / MAX_BAR) * 90}%`,
                     background: i === 4
                       ? "repeating-linear-gradient(45deg, var(--marker-red) 0 8px, oklch(0.55 0.22 25) 8px 16px)"
                       : "repeating-linear-gradient(45deg, var(--marker-yellow) 0 8px, oklch(0.85 0.16 95) 8px 16px)",
