@@ -385,11 +385,13 @@
   }
   .animate-burst { animation: burst 1.4s cubic-bezier(0.18, 0.7, 0.3, 1) forwards; }
 
-  /* Page-turn transition: soft fade + slight lift on route change */
-  .page-turn { transition: opacity 180ms ease, transform 180ms ease; transform-origin: top center; }
-  .page-turn[data-stage="in"] { opacity: 1; transform: translateY(0) rotate(0deg); }
-  .page-turn[data-stage="out"] { opacity: 0; transform: translateY(6px) rotate(-0.4deg); }
+  /* Page-turn transition: fade-in keyframe replays on key change */
+  @keyframes page-turn-in {
+    from { opacity: 0; transform: translateY(8px) rotate(-0.4deg); }
+    to   { opacity: 1; transform: translateY(0)   rotate(0); }
+  }
+  .page-turn-in { animation: page-turn-in 260ms ease-out both; transform-origin: top center; }
   @media (prefers-reduced-motion: reduce) {
-    .page-turn, .animate-burst, .animate-pop, .animate-ember, .animate-smoke, .animate-wobble { animation: none !important; transition: none !important; }
+    .page-turn-in, .animate-burst, .animate-pop, .animate-ember, .animate-smoke, .animate-wobble { animation: none !important; transition: none !important; }
   }
 }
