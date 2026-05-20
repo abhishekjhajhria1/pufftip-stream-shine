@@ -36,14 +36,15 @@ const FALLBACK = [
 export function PuffyMascot() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const nav = useNavigate();
-  const [dismissed, setDismissed] = useState(true);
+  const [dismissed, setDismissed] = useState(false);
   const [open, setOpen] = useState(false);
   const [hintIdx, setHintIdx] = useState(0);
 
   // load persisted dismissal
   useEffect(() => {
-    const v = typeof document !== "undefined" && document.cookie.includes("pufftip_mascot=off");
-    setDismissed(!!v);
+    if (typeof document !== "undefined" && document.cookie.includes("pufftip_mascot=off")) {
+      setDismissed(true);
+    }
   }, []);
 
   // pick hints for current route
