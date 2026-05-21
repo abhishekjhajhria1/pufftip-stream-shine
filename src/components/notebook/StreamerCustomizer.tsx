@@ -196,7 +196,7 @@ export function StreamerCustomizer({ handle }: { handle: string }) {
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
               <span className="font-label text-xs uppercase text-ink-soft self-center">add block:</span>
-              {(["announcement","schedule","links","faq","video","sponsors","text"] as BlockKind[]).map((k) => (
+              {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch"] as BlockKind[]).map((k) => (
                 <button key={k} onClick={() => upsertBlock(handle, newBlock(k))} className="rounded-md border-2 border-ink bg-paper px-2 py-1 font-hand text-base text-ink hover:bg-marker-yellow">+ {k}</button>
               ))}
             </div>
@@ -310,6 +310,49 @@ function BlockEditor({ block, onChange, onRemove, onUp, onDown, isFirst, isLast 
             </div>
           ))}
           <button onClick={() => onChange({ ...block, items: [...block.items, { name: "new sponsor", emoji: "✨" }] })} className="font-label text-xs text-ink-soft underline">+ sponsor</button>
+        </div>
+      )}
+
+      {block.kind === "poll" && (
+        <div className="mt-2 space-y-2">
+          <input className={input} placeholder="question" value={block.question} onChange={(e) => onChange({ ...block, question: e.target.value })} />
+          {block.options.map((o, i) => (
+            <div key={i} className="grid grid-cols-[1fr_5rem_auto] gap-1">
+              <input className={input} placeholder="option label" value={o.label} onChange={(e) => onChange({ ...block, options: block.options.map((x, j) => i === j ? { ...x, label: e.target.value } : x) })} />
+              <input type="number" min={0} className={input} value={o.votes} onChange={(e) => onChange({ ...block, options: block.options.map((x, j) => i === j ? { ...x, votes: Number(e.target.value) || 0 } : x) })} />
+              <button onClick={() => onChange({ ...block, options: block.options.filter((_, j) => i !== j) })} className="px-2 font-label text-xs text-marker-red">×</button>
+            </div>
+          ))}
+          <button onClick={() => onChange({ ...block, options: [...block.options, { label: "new option", votes: 0 }] })} className="font-label text-xs text-ink-soft underline">+ option</button>
+        </div>
+      )}
+
+      {block.kind === "gallery" && (
+        <div className="mt-2 space-y-1">
+          {block.items.map((it, i) => (
+            <div key={i} className="grid grid-cols-[3rem_1fr_5rem_auto] gap-1">
+              <input className={input} value={it.emoji} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, emoji: e.target.value } : x) })} />
+              <input className={input} placeholder="caption" value={it.caption} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, caption: e.target.value } : x) })} />
+              <input type="number" min={0} max={360} className={input} value={it.hue} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, hue: Number(e.target.value) || 0 } : x) })} />
+              <button onClick={() => onChange({ ...block, items: block.items.filter((_, j) => i !== j) })} className="px-2 font-label text-xs text-marker-red">×</button>
+            </div>
+          ))}
+          <button onClick={() => onChange({ ...block, items: [...block.items, { emoji: "✨", caption: "new", hue: 200 }] })} className="font-label text-xs text-ink-soft underline">+ photo</button>
+        </div>
+      )}
+
+      {block.kind === "merch" && (
+        <div className="mt-2 space-y-1">
+          {block.items.map((it, i) => (
+            <div key={i} className="grid grid-cols-[3rem_1fr_1fr_1fr_auto] gap-1">
+              <input className={input} value={it.emoji} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, emoji: e.target.value } : x) })} />
+              <input className={input} placeholder="name" value={it.name} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, name: e.target.value } : x) })} />
+              <input className={input} placeholder="price" value={it.price} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, price: e.target.value } : x) })} />
+              <input className={input} placeholder="https://" value={it.url ?? ""} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, url: e.target.value } : x) })} />
+              <button onClick={() => onChange({ ...block, items: block.items.filter((_, j) => i !== j) })} className="px-2 font-label text-xs text-marker-red">×</button>
+            </div>
+          ))}
+          <button onClick={() => onChange({ ...block, items: [...block.items, { name: "new item", emoji: "🎁", price: "0.1 SOL" }] })} className="font-label text-xs text-ink-soft underline">+ item</button>
         </div>
       )}
     </div>

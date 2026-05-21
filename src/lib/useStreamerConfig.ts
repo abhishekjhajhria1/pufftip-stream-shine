@@ -8,7 +8,10 @@ export type BlockKind =
   | "faq"
   | "video"
   | "sponsors"
-  | "text";
+  | "text"
+  | "poll"
+  | "gallery"
+  | "merch";
 
 export type Block =
   | { id: string; kind: "announcement"; title: string; body: string; color: "yellow" | "pink" | "teal" | "green" }
@@ -17,7 +20,10 @@ export type Block =
   | { id: string; kind: "faq"; title: string; items: { q: string; a: string }[] }
   | { id: string; kind: "video"; title: string; youtubeId: string; caption?: string }
   | { id: string; kind: "sponsors"; title: string; items: { name: string; emoji: string; url?: string }[] }
-  | { id: string; kind: "text"; title: string; body: string };
+  | { id: string; kind: "text"; title: string; body: string }
+  | { id: string; kind: "poll"; title: string; question: string; options: { label: string; votes: number }[] }
+  | { id: string; kind: "gallery"; title: string; items: { emoji: string; caption: string; hue: number }[] }
+  | { id: string; kind: "merch"; title: string; items: { name: string; emoji: string; price: string; url?: string }[] };
 
 export type SectionKey = "tipWall" | "topFans" | "quickTip" | "alsoOn";
 
@@ -186,5 +192,34 @@ export function newBlock(kind: BlockKind): Block {
       };
     case "text":
       return { id, kind, title: "a note", body: "write whatever you want here. markdown isn't supported but vibes are." };
+    case "poll":
+      return {
+        id, kind, title: "tonight's vote",
+        question: "what should i play next?",
+        options: [
+          { label: "factorio", votes: 4 },
+          { label: "elden ring", votes: 7 },
+          { label: "just chat", votes: 2 },
+        ],
+      };
+    case "gallery":
+      return {
+        id, kind, title: "stream highlights",
+        items: [
+          { emoji: "🎮", caption: "boss fight", hue: 280 },
+          { emoji: "🍜", caption: "ramen night", hue: 60 },
+          { emoji: "🎸", caption: "lo-fi set", hue: 25 },
+          { emoji: "📷", caption: "irl walk", hue: 320 },
+        ],
+      };
+    case "merch":
+      return {
+        id, kind, title: "merch shelf",
+        items: [
+          { name: "tour tee", emoji: "👕", price: "0.4 SOL" },
+          { name: "sticker pack", emoji: "🪧", price: "0.05 SOL" },
+          { name: "signed poster", emoji: "🖼️", price: "1.2 SOL" },
+        ],
+      };
   }
 }

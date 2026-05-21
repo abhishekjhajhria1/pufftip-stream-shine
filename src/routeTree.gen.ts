@@ -15,6 +15,7 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
+import { Route as OverlayHandleRouteImport } from './routes/overlay.$handle'
 import { Route as UHandleWishlistRouteImport } from './routes/u.$handle_.wishlist'
 
 const PricingRoute = PricingRouteImport.update({
@@ -47,6 +48,11 @@ const UHandleRoute = UHandleRouteImport.update({
   path: '/u/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OverlayHandleRoute = OverlayHandleRouteImport.update({
+  id: '/overlay/$handle',
+  path: '/overlay/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UHandleWishlistRoute = UHandleWishlistRouteImport.update({
   id: '/u/$handle_/wishlist',
   path: '/u/$handle/wishlist',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/obs': typeof ObsRoute
   '/pricing': typeof PricingRoute
+  '/overlay/$handle': typeof OverlayHandleRoute
   '/u/$handle': typeof UHandleRoute
   '/u/$handle/wishlist': typeof UHandleWishlistRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/obs': typeof ObsRoute
   '/pricing': typeof PricingRoute
+  '/overlay/$handle': typeof OverlayHandleRoute
   '/u/$handle': typeof UHandleRoute
   '/u/$handle/wishlist': typeof UHandleWishlistRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/obs': typeof ObsRoute
   '/pricing': typeof PricingRoute
+  '/overlay/$handle': typeof OverlayHandleRoute
   '/u/$handle': typeof UHandleRoute
   '/u/$handle_/wishlist': typeof UHandleWishlistRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/obs'
     | '/pricing'
+    | '/overlay/$handle'
     | '/u/$handle'
     | '/u/$handle/wishlist'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/obs'
     | '/pricing'
+    | '/overlay/$handle'
     | '/u/$handle'
     | '/u/$handle/wishlist'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/obs'
     | '/pricing'
+    | '/overlay/$handle'
     | '/u/$handle'
     | '/u/$handle_/wishlist'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   ObsRoute: typeof ObsRoute
   PricingRoute: typeof PricingRoute
+  OverlayHandleRoute: typeof OverlayHandleRoute
   UHandleRoute: typeof UHandleRoute
   UHandleWishlistRoute: typeof UHandleWishlistRoute
 }
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/overlay/$handle': {
+      id: '/overlay/$handle'
+      path: '/overlay/$handle'
+      fullPath: '/overlay/$handle'
+      preLoaderRoute: typeof OverlayHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/u/$handle_/wishlist': {
       id: '/u/$handle_/wishlist'
       path: '/u/$handle/wishlist'
@@ -181,19 +201,10 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   ObsRoute: ObsRoute,
   PricingRoute: PricingRoute,
+  OverlayHandleRoute: OverlayHandleRoute,
   UHandleRoute: UHandleRoute,
   UHandleWishlistRoute: UHandleWishlistRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
