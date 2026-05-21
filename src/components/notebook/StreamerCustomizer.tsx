@@ -196,7 +196,7 @@ export function StreamerCustomizer({ handle }: { handle: string }) {
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
               <span className="font-label text-xs uppercase text-ink-soft self-center">add block:</span>
-              {(["announcement","schedule","links","faq","video","sponsors","text"] as BlockKind[]).map((k) => (
+              {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch"] as BlockKind[]).map((k) => (
                 <button key={k} onClick={() => upsertBlock(handle, newBlock(k))} className="rounded-md border-2 border-ink bg-paper px-2 py-1 font-hand text-base text-ink hover:bg-marker-yellow">+ {k}</button>
               ))}
             </div>
