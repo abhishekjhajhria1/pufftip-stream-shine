@@ -3,6 +3,7 @@ import { PaperPage, WashiTape, Highlight, Polaroid, Stamp, StickyNote, MarkerUnd
 import { STREAMERS, SEED_TIPS } from "@/lib/mockData";
 import { StreamerCustomizer } from "@/components/notebook/StreamerCustomizer";
 import { useStreamerConfig } from "@/lib/useStreamerConfig";
+import { OverlayTools } from "@/components/notebook/OverlayTools";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -146,6 +147,11 @@ function Dashboard() {
       {/* Page customizer */}
       <div id="customize" className="mt-12">
         <StreamerCustomizer handle={me.handle} />
+      </div>
+
+      {/* Overlay & embed tools */}
+      <div id="overlay" className="mt-12">
+        <OverlayTools handle={me.handle} />
       </div>
 
       {/* Switch streamer */}
