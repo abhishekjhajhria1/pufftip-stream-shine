@@ -29,6 +29,18 @@ function OverlayPage() {
   const seen = useRef<Set<string>>(new Set());
   const initialized = useRef(false);
 
+  // Cross-tab sync: if a streamer fires a test tip from /dashboard in another tab,
+  // we listen for localStorage changes and re-hydrate the wallet store.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "pufftip-demo-wallet") {
+        useDemoWallet.persist.rehydrate();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   useEffect(() => {
     // First mount: prime seen ids so we don't replay the seed history.
     if (!initialized.current) {
