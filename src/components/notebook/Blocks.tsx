@@ -1,5 +1,5 @@
-import { type Block } from "@/lib/useStreamerConfig";
-import { Highlight, MarkerUnderline, Sketch, StickyNote, WashiTape } from "./primitives";
+import { useStreamerConfig, type Block } from "@/lib/useStreamerConfig";
+import { Highlight, MarkerUnderline, Polaroid, Sketch, StickyNote, WashiTape } from "./primitives";
 
 export function BlockRenderer({ block }: { block: Block }) {
   switch (block.kind) {
@@ -111,5 +111,114 @@ export function BlockRenderer({ block }: { block: Block }) {
           <p className="mt-2 whitespace-pre-wrap font-label text-base text-ink">{block.body}</p>
         </div>
       );
+
+    case "poll":
+      return <PollBlock block={block} />;
+
+    case "gallery":
+      return (
+        <div className="paper-card rounded-xl p-5">
+          <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>{block.title}</MarkerUnderline></h3>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {block.items.map((it, i) => (
+              <div key={i} className="flex justify-center">
+                <Polaroid hue={it.hue} emoji={it.emoji} caption={it.caption} size={130} rotate={(i % 2 === 0 ? -1 : 1) * (1 + (i % 3))} />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case "merch":
+      return (
+        <div className="paper-card rounded-xl p-5">
+          <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>{block.title}</MarkerUnderline></h3>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {block.items.map((it, i) => {
+              const inner = (
+                <div className="flex h-full flex-col items-center gap-1 rounded-lg border-2 border-dashed border-ink/40 bg-paper p-4 text-center transition hover:border-marker-red">
+                  <span className="text-4xl">{it.emoji}</span>
+                  <div className="font-hand text-2xl text-ink">{it.name}</div>
+                  <div className="font-mono text-sm text-marker-red">{it.price}</div>
+                  <div className="mt-1 font-label text-xs text-ink-soft underline">buy →</div>
+                </div>
+              );
+              return it.url ? (
+                <a key={i} href={it.url} target="_blank" rel="noopener noreferrer" style={{ transform: `rotate(${(i % 2 === 0 ? -1 : 1) * 1.2}deg)` }}>{inner}</a>
+              ) : (
+                <div key={i} style={{ transform: `rotate(${(i % 2 === 0 ? -1 : 1) * 1.2}deg)` }}>{inner}</div>
+              );
+            })}
+          </div>
+        </div>
+      );
   }
+}
+
+function PollBlock({ block }: { block: Extract<Block, { kind: "poll" }> }) {
+  // Use the streamer-config store to persist votes locally (per browser).
+  const update = useStreamerConfig((s) => s.upsertBlock);
+  // We don't know the streamer handle here — pass through a click handler that
+  // mutates the block object in place via local component state for now.
+  // For demo simplicity we keep voting client-only and update local copy.
+  // To stay reactive we track the chosen option in localStorage by block id.
+  const key = `pufftip-poll-${block.id}`;
+  const chosen = typeof window !== "undefined" ? window.localStorage.getItem(key) : null;
+  const total = block.options.reduce((a, b) => a + b.votes, 0) || 1;
+
+  const vote = (label: string) => {
+    if (chosen) return;
+    window.localStorage.setItem(key, label);
+    const next = {
+      ...block,
+      options: block.options.map((o) => (o.label === label ? { ...o, votes: o.votes + 1 } : o)),
+    };
+    // upsert into whichever streamer config owns this block — best effort: find it.
+    const state = useStreamerConfig.getState();
+    for (const [handle, cfg] of Object.entries(state.configs)) {
+      if (cfg.blocks?.some((b) => b.id === block.id)) {
+        update(handle, next);
+        return;
+      }
+    }
+    // not in any config (default seed?) — force re-render via dummy refresh
+    window.dispatchEvent(new Event("storage"));
+  };
+
+  return (
+    <Sketch rotate={-0.5} className="bg-card">
+      <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>{block.title}</MarkerUnderline></h3>
+      <p className="mt-1 font-hand text-2xl text-ink"><Highlight>{block.question}</Highlight></p>
+      <div className="mt-4 space-y-2">
+        {block.options.map((o) => {
+          const pct = Math.round((o.votes / total) * 100);
+          const isChosen = chosen === o.label;
+          return (
+            <button
+              key={o.label}
+              onClick={() => vote(o.label)}
+              disabled={!!chosen}
+              className={`relative block w-full overflow-hidden rounded-md border-2 border-ink bg-paper p-3 text-left transition ${chosen ? "cursor-default" : "hover:bg-marker-yellow"}`}
+            >
+              <span
+                aria-hidden
+                className="absolute inset-y-0 left-0"
+                style={{
+                  width: chosen ? `${pct}%` : "0%",
+                  background: isChosen ? "var(--marker-green)" : "var(--marker-yellow)",
+                  opacity: 0.4,
+                  transition: "width 600ms cubic-bezier(0.3, 0.7, 0.3, 1)",
+                }}
+              />
+              <span className="relative flex items-center justify-between font-hand text-2xl text-ink">
+                <span>{isChosen && "✓ "}{o.label}</span>
+                <span className="font-mono text-sm text-ink-soft">{chosen ? `${pct}% · ${o.votes}` : "vote"}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {chosen && <p className="mt-2 font-label text-xs text-ink-soft">thanks for voting — results above.</p>}
+    </Sketch>
+  );
 }
