@@ -143,7 +143,23 @@ function StreamerPage() {
                 <span><strong className="font-mono text-ink">{streamer.totalReceived.toFixed(1)}</strong> SOL received</span>
                 <span><strong className="font-mono text-ink">{streamer.followers}</strong> fans</span>
                 <span><strong className="font-mono text-ink">{tips.length}</strong> tips on the wall</span>
+                {base.pronouns && <span>· {base.pronouns}</span>}
+                {base.city && <span>· {base.city}</span>}
+                {base.joinedAgo && <span>· {base.joinedAgo}</span>}
               </div>
+              {base.achievements && base.achievements.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {base.achievements.map((a, i) => (
+                    <span
+                      key={a.label}
+                      className="rounded-full border-2 border-dashed border-ink/40 bg-paper px-2.5 py-0.5 font-label text-xs text-ink"
+                      style={{ transform: `rotate(${(i % 2 === 0 ? -0.8 : 0.8)}deg)` }}
+                    >
+                      <span className="mr-1">{a.emoji}</span>{a.label}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="mt-5 flex flex-wrap gap-3">
                 <button onClick={() => setOpen(true)} className="rotate-doodle-1 rounded-md border-2 border-ink bg-marker-red px-5 py-2.5 font-hand text-2xl text-paper shadow-sticker">
                   send a puff ✈️
