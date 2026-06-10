@@ -5,6 +5,7 @@ import {
   newBlock,
   PAPER_TONES,
   HEADING_FONTS,
+  THEME_PRESETS,
   type Block,
   type BlockKind,
   type SectionKey,
@@ -109,6 +110,25 @@ export function StreamerCustomizer({ handle }: { handle: string }) {
 
         {tab === "theme" && (
           <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="quick presets" full>
+              <div className="flex flex-wrap gap-2">
+                {THEME_PRESETS.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => update(handle, {
+                      accentHue: p.accentHue,
+                      paperTone: p.paperTone,
+                      headingFont: p.headingFont,
+                    })}
+                    className="flex items-center gap-2 rounded-md border-2 border-ink/30 bg-paper px-2 py-1 font-hand text-lg text-ink hover:border-ink"
+                  >
+                    <span className="inline-block size-4 rounded-full border border-ink/40" style={{ background: p.swatch }} />
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-1 font-label text-xs text-ink-soft">one click sets accent + paper + heading font. tweak below after.</div>
+            </Field>
             <Field label={`accent hue · ${cfg.accentHue ?? 25}°`} full>
               <input type="range" min={0} max={360} value={cfg.accentHue ?? 25} onChange={(e) => update(handle, { accentHue: Number(e.target.value) })} className="w-full" />
               <div className="mt-2 h-3 w-full rounded-full" style={{ background: `linear-gradient(90deg, oklch(0.62 0.22 0), oklch(0.62 0.22 60), oklch(0.62 0.22 120), oklch(0.62 0.22 180), oklch(0.62 0.22 240), oklch(0.62 0.22 300), oklch(0.62 0.22 360))` }} />
@@ -196,7 +216,7 @@ export function StreamerCustomizer({ handle }: { handle: string }) {
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
               <span className="font-label text-xs uppercase text-ink-soft self-center">add block:</span>
-              {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch"] as BlockKind[]).map((k) => (
+              {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch","socials","countdown","testimonials"] as BlockKind[]).map((k) => (
                 <button key={k} onClick={() => upsertBlock(handle, newBlock(k))} className="rounded-md border-2 border-ink bg-paper px-2 py-1 font-hand text-base text-ink hover:bg-marker-yellow">+ {k}</button>
               ))}
             </div>
