@@ -8,6 +8,10 @@ export type Streamer = {
   followers: string;
   totalReceived: number; // SOL
   game: string;
+  pronouns?: string;
+  city?: string;
+  joinedAgo?: string;
+  achievements?: { emoji: string; label: string }[];
 };
 
 export type Tip = {
@@ -39,6 +43,14 @@ export const STREAMERS: Streamer[] = [
     followers: "12.4k",
     totalReceived: 412.8,
     game: "Just Chatting",
+    pronouns: "they/them",
+    city: "berlin",
+    joinedAgo: "2 years on pufftip",
+    achievements: [
+      { emoji: "🎯", label: "100-day streak" },
+      { emoji: "🪙", label: "first 100 SOL club" },
+      { emoji: "🎙️", label: "mic upgrade unlocked" },
+    ],
   },
   {
     handle: "ghostroast",
@@ -50,6 +62,14 @@ export const STREAMERS: Streamer[] = [
     followers: "48.1k",
     totalReceived: 1820.4,
     game: "Resident Evil 4",
+    pronouns: "she/her",
+    city: "manchester",
+    joinedAgo: "3 years on pufftip",
+    achievements: [
+      { emoji: "🏆", label: "RE4 world record holder" },
+      { emoji: "🐈", label: "cat dad of the year" },
+      { emoji: "🔥", label: "1000+ tips received" },
+    ],
   },
   {
     handle: "lateshift",
@@ -61,6 +81,13 @@ export const STREAMERS: Streamer[] = [
     followers: "6.2k",
     totalReceived: 88.3,
     game: "VS Code",
+    pronouns: "he/him",
+    city: "lisbon",
+    joinedAgo: "8 months on pufftip",
+    achievements: [
+      { emoji: "🚢", label: "ships every friday" },
+      { emoji: "☕", label: "100% caffeinated" },
+    ],
   },
   {
     handle: "misokitchen",
@@ -72,6 +99,13 @@ export const STREAMERS: Streamer[] = [
     followers: "21.7k",
     totalReceived: 522.1,
     game: "IRL",
+    pronouns: "she/they",
+    city: "tokyo",
+    joinedAgo: "1 year on pufftip",
+    achievements: [
+      { emoji: "🍜", label: "200 bowls served live" },
+      { emoji: "🔪", label: "all 10 fingers intact" },
+    ],
   },
   {
     handle: "zerogpete",
@@ -83,6 +117,13 @@ export const STREAMERS: Streamer[] = [
     followers: "33.9k",
     totalReceived: 778.2,
     game: "Factorio",
+    pronouns: "he/him",
+    city: "denver",
+    joinedAgo: "2 years on pufftip",
+    achievements: [
+      { emoji: "🚀", label: "launched 12 rockets" },
+      { emoji: "🤖", label: "1M items/min club" },
+    ],
   },
   {
     handle: "polaroid_kid",
@@ -94,6 +135,13 @@ export const STREAMERS: Streamer[] = [
     followers: "4.1k",
     totalReceived: 41.6,
     game: "IRL",
+    pronouns: "they/them",
+    city: "brooklyn",
+    joinedAgo: "5 months on pufftip",
+    achievements: [
+      { emoji: "📷", label: "shoots film only" },
+      { emoji: "🌃", label: "night walk specialist" },
+    ],
   },
 ];
 

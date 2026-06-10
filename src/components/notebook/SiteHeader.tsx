@@ -18,6 +18,10 @@ export function SiteHeader() {
   const [showConnect, setShowConnect] = useState(false);
   const [open, setOpen] = useState(false);
   const { theme, toggle } = useTheme();
+  const themeLabel =
+    theme === "notebook" ? "✎ notebook" : theme === "studio" ? "◐ studio" : "✦ midnight";
+  const nextThemeLabel =
+    theme === "notebook" ? "studio" : theme === "studio" ? "midnight" : "notebook";
 
   return (
     <>
@@ -52,10 +56,10 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggle}
-              title={`switch to ${theme === "notebook" ? "studio" : "notebook"} theme`}
+              title={`switch to ${nextThemeLabel} theme`}
               className="rotate-doodle-1 rounded-full border-2 border-ink bg-card px-2.5 py-1 font-label text-xs uppercase tracking-wider text-ink hover:bg-marker-yellow"
             >
-              {theme === "notebook" ? "✎ notebook" : "◐ studio"}
+              {themeLabel}
             </button>
             <div className="hidden rotate-doodle-1 items-center gap-1.5 rounded-full border-2 border-dashed border-ink/40 bg-paper px-3 py-1 sm:flex">
               <span className="size-2 rounded-full bg-marker-green animate-ember" />

@@ -11,7 +11,10 @@ export type BlockKind =
   | "text"
   | "poll"
   | "gallery"
-  | "merch";
+  | "merch"
+  | "socials"
+  | "countdown"
+  | "testimonials";
 
 export type Block =
   | { id: string; kind: "announcement"; title: string; body: string; color: "yellow" | "pink" | "teal" | "green" }
@@ -23,7 +26,10 @@ export type Block =
   | { id: string; kind: "text"; title: string; body: string }
   | { id: string; kind: "poll"; title: string; question: string; options: { label: string; votes: number }[] }
   | { id: string; kind: "gallery"; title: string; items: { emoji: string; caption: string; hue: number }[] }
-  | { id: string; kind: "merch"; title: string; items: { name: string; emoji: string; price: string; url?: string }[] };
+  | { id: string; kind: "merch"; title: string; items: { name: string; emoji: string; price: string; url?: string }[] }
+  | { id: string; kind: "socials"; title: string; items: { platform: "twitch" | "youtube" | "twitter" | "instagram" | "tiktok" | "discord" | "kick" | "github"; handle: string; url: string }[] }
+  | { id: string; kind: "countdown"; title: string; label: string; targetISO: string }
+  | { id: string; kind: "testimonials"; title: string; items: { from: string; quote: string; color?: "yellow" | "pink" | "teal" | "green" }[] };
 
 export type SectionKey = "tipWall" | "topFans" | "quickTip" | "alsoOn";
 
@@ -83,6 +89,23 @@ export const DEFAULT_CONFIG: StreamerConfig = {
   sections: DEFAULT_SECTIONS,
   blocks: [],
 };
+
+/** One-click theme presets — applied to a streamer's accent + paper + font in one go. */
+export const THEME_PRESETS: Array<{
+  id: string;
+  label: string;
+  accentHue: number;
+  paperTone: NonNullable<StreamerConfig["paperTone"]>;
+  headingFont: NonNullable<StreamerConfig["headingFont"]>;
+  swatch: string;
+}> = [
+  { id: "ember",    label: "ember",     accentHue: 25,  paperTone: "cream", headingFont: "caveat",  swatch: "oklch(0.62 0.22 25)" },
+  { id: "neon",     label: "neon mint", accentHue: 155, paperTone: "mint",  headingFont: "kalam",   swatch: "oklch(0.62 0.22 155)" },
+  { id: "rosewax",  label: "rose wax",  accentHue: 350, paperTone: "rose",  headingFont: "shadows", swatch: "oklch(0.62 0.22 350)" },
+  { id: "ocean",    label: "ocean",     accentHue: 230, paperTone: "sky",   headingFont: "patrick", swatch: "oklch(0.62 0.22 230)" },
+  { id: "vintage",  label: "vintage",   accentHue: 50,  paperTone: "ivory", headingFont: "indie",   swatch: "oklch(0.62 0.22 50)" },
+  { id: "noir",     label: "noir",      accentHue: 280, paperTone: "ivory", headingFont: "shadows", swatch: "oklch(0.55 0.22 280)" },
+];
 
 export function getConfig(map: Record<string, StreamerConfig>, handle: string): StreamerConfig {
   return { ...DEFAULT_CONFIG, ...(map[handle] ?? {}) };
@@ -219,6 +242,29 @@ export function newBlock(kind: BlockKind): Block {
           { name: "tour tee", emoji: "👕", price: "0.4 SOL" },
           { name: "sticker pack", emoji: "🪧", price: "0.05 SOL" },
           { name: "signed poster", emoji: "🖼️", price: "1.2 SOL" },
+        ],
+      };
+    case "socials":
+      return {
+        id, kind, title: "find me everywhere",
+        items: [
+          { platform: "twitch",    handle: "yourname", url: "https://twitch.tv/yourname" },
+          { platform: "youtube",   handle: "@yourname", url: "https://youtube.com/@yourname" },
+          { platform: "twitter",   handle: "@yourname", url: "https://twitter.com/yourname" },
+          { platform: "discord",   handle: "join the server", url: "https://discord.gg/" },
+        ],
+      };
+    case "countdown": {
+      const t = new Date(Date.now() + 1000 * 60 * 60 * 24 * 3); // ~3 days from now
+      return { id, kind, title: "next stream in", label: "doors open 8pm", targetISO: t.toISOString() };
+    }
+    case "testimonials":
+      return {
+        id, kind, title: "kind words",
+        items: [
+          { from: "miso",   quote: "best chill streams on the internet, no notes.", color: "yellow" },
+          { from: "ghostr", quote: "i came for the lo-fi, stayed for the rambling.", color: "pink" },
+          { from: "anon",   quote: "tipped once, became a person.", color: "teal" },
         ],
       };
   }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-export type Theme = "notebook" | "studio";
+export type Theme = "notebook" | "studio" | "midnight";
+export const THEMES: Theme[] = ["notebook", "studio", "midnight"];
 const COOKIE = "pufftip_theme";
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
@@ -8,7 +9,7 @@ function readCookie(): Theme | null {
   if (typeof document === "undefined") return null;
   const m = document.cookie.match(new RegExp("(?:^|; )" + COOKIE + "=([^;]+)"));
   const v = m?.[1];
-  return v === "notebook" || v === "studio" ? v : null;
+  return v === "notebook" || v === "studio" || v === "midnight" ? v : null;
 }
 
 function writeCookie(t: Theme) {
@@ -37,7 +38,10 @@ export function useTheme() {
     apply(t);
   };
 
-  const toggle = () => setTheme(theme === "notebook" ? "studio" : "notebook");
+  const toggle = () => {
+    const idx = THEMES.indexOf(theme);
+    setTheme(THEMES[(idx + 1) % THEMES.length]);
+  };
 
   return { theme, setTheme, toggle };
 }

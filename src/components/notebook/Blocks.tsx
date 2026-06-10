@@ -1,5 +1,6 @@
 import { useStreamerConfig, type Block } from "@/lib/useStreamerConfig";
 import { Highlight, MarkerUnderline, Polaroid, Sketch, StickyNote, WashiTape } from "./primitives";
+import { useEffect, useState } from "react";
 
 export function BlockRenderer({ block }: { block: Block }) {
   switch (block.kind) {
@@ -115,6 +116,28 @@ export function BlockRenderer({ block }: { block: Block }) {
     case "poll":
       return <PollBlock block={block} />;
 
+    case "socials":
+      return <SocialsBlock block={block} />;
+
+    case "countdown":
+      return <CountdownBlock block={block} />;
+
+    case "testimonials":
+      return (
+        <div className="paper-card rounded-xl p-5">
+          <WashiTape color="pink" rotate={-5} className="-top-2 left-8" style={{ width: "5rem" }} />
+          <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>{block.title}</MarkerUnderline></h3>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            {block.items.map((it, i) => (
+              <StickyNote key={i} color={it.color ?? "yellow"} rotate={(i % 2 === 0 ? -1.5 : 1.5) * (1 + (i % 2))} className="break-words">
+                <p className="font-hand text-2xl leading-tight text-ink">“{it.quote}”</p>
+                <p className="mt-2 font-label text-xs text-ink-soft">— @{it.from}</p>
+              </StickyNote>
+            ))}
+          </div>
+        </div>
+      );
+
     case "gallery":
       return (
         <div className="paper-card rounded-xl p-5">
@@ -153,6 +176,81 @@ export function BlockRenderer({ block }: { block: Block }) {
         </div>
       );
   }
+}
+
+const SOCIAL_META: Record<string, { emoji: string; label: string }> = {
+  twitch:    { emoji: "🟣", label: "twitch" },
+  youtube:   { emoji: "▶️", label: "youtube" },
+  twitter:   { emoji: "🐦", label: "twitter / X" },
+  instagram: { emoji: "📸", label: "instagram" },
+  tiktok:    { emoji: "🎵", label: "tiktok" },
+  discord:   { emoji: "💬", label: "discord" },
+  kick:      { emoji: "🦵", label: "kick" },
+  github:    { emoji: "🐙", label: "github" },
+};
+
+function SocialsBlock({ block }: { block: Extract<Block, { kind: "socials" }> }) {
+  return (
+    <div className="paper-card rounded-xl p-5">
+      <h3 className="font-hand text-3xl text-ink">{block.title}</h3>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {block.items.map((s, i) => {
+          const meta = SOCIAL_META[s.platform] ?? { emoji: "🔗", label: s.platform };
+          return (
+            <a
+              key={i}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-2 rounded-md border-2 border-dashed border-ink/40 bg-paper px-3 py-2 transition hover:border-marker-red hover:bg-marker-yellow"
+              style={{ transform: `rotate(${(i % 2 === 0 ? -0.6 : 0.6)}deg)` }}
+            >
+              <span className="text-2xl">{meta.emoji}</span>
+              <span className="flex min-w-0 flex-col">
+                <span className="font-hand text-xl text-ink">{meta.label}</span>
+                <span className="truncate font-label text-xs text-ink-soft">{s.handle}</span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function CountdownBlock({ block }: { block: Extract<Block, { kind: "countdown" }> }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const target = new Date(block.targetISO).getTime();
+  const diff = Math.max(0, target - now);
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  const live = diff === 0;
+  const cells: [string, number | string][] = live
+    ? [["status", "LIVE"]]
+    : [["days", d], ["hrs", h], ["min", m], ["sec", s]];
+  return (
+    <Sketch rotate={-0.4} className="bg-card">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>{block.title}</MarkerUnderline></h3>
+        <span className="font-label text-sm text-ink-soft">{block.label}</span>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-3">
+        {cells.map(([k, v]) => (
+          <div key={k} className="rotate-doodle-1 min-w-[5rem] rounded-md border-2 border-ink bg-paper px-3 py-2 text-center shadow-sticker">
+            <div className="font-hand text-4xl tabular-nums text-ink">{typeof v === "number" ? String(v).padStart(2, "0") : v}</div>
+            <div className="font-label text-[10px] uppercase tracking-wider text-ink-soft">{k}</div>
+          </div>
+        ))}
+      </div>
+      {live && <p className="mt-3 font-hand text-2xl text-marker-red">we're on. go say hi.</p>}
+    </Sketch>
+  );
 }
 
 function PollBlock({ block }: { block: Extract<Block, { kind: "poll" }> }) {

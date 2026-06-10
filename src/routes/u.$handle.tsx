@@ -7,6 +7,7 @@ import { useDemoWallet } from "@/lib/useDemoWallet";
 import { DEFAULT_SECTIONS, getConfig, HEADING_FONTS, newBlock, PAPER_TONES, useStreamerConfig, type Block, type BlockKind, type SectionKey } from "@/lib/useStreamerConfig";
 import { InlineEdit } from "@/components/notebook/InlineEdit";
 import { BlockRenderer } from "@/components/notebook/Blocks";
+import { SEED_BLOCKS } from "@/lib/seedBlocks";
 
 export const Route = createFileRoute("/u/$handle")({
   head: ({ params }) => {
@@ -93,6 +94,13 @@ function StreamerPage() {
   const sections = cfg.sections ?? DEFAULT_SECTIONS;
   const visible = (k: SectionKey) => sections.find((s) => s.key === k)?.visible ?? true;
 
+  // If the owner hasn't added custom blocks yet, fall back to the
+  // streamer's seed content so the example profiles look fully alive.
+  const blocksToShow: Block[] = (cfg.blocks ?? []).length > 0
+    ? (cfg.blocks ?? [])
+    : (SEED_BLOCKS[base.handle] ?? []);
+  const showingSeed = (cfg.blocks ?? []).length === 0 && blocksToShow.length > 0;
+
   // goal progress
   const goalRaised = tips.reduce((a, b) => a + b.amount, 0);
 
@@ -135,7 +143,23 @@ function StreamerPage() {
                 <span><strong className="font-mono text-ink">{streamer.totalReceived.toFixed(1)}</strong> SOL received</span>
                 <span><strong className="font-mono text-ink">{streamer.followers}</strong> fans</span>
                 <span><strong className="font-mono text-ink">{tips.length}</strong> tips on the wall</span>
+                {base.pronouns && <span>· {base.pronouns}</span>}
+                {base.city && <span>· {base.city}</span>}
+                {base.joinedAgo && <span>· {base.joinedAgo}</span>}
               </div>
+              {base.achievements && base.achievements.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {base.achievements.map((a: { emoji: string; label: string }, i: number) => (
+                    <span
+                      key={a.label}
+                      className="rounded-full border-2 border-dashed border-ink/40 bg-paper px-2.5 py-0.5 font-label text-xs text-ink"
+                      style={{ transform: `rotate(${(i % 2 === 0 ? -0.8 : 0.8)}deg)` }}
+                    >
+                      <span className="mr-1">{a.emoji}</span>{a.label}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="mt-5 flex flex-wrap gap-3">
                 <button onClick={() => setOpen(true)} className="rotate-doodle-1 rounded-md border-2 border-ink bg-marker-red px-5 py-2.5 font-hand text-2xl text-paper shadow-sticker">
                   send a puff ✈️
@@ -166,12 +190,17 @@ function StreamerPage() {
       )}
 
       {/* Custom blocks (above main grid) */}
-      {(cfg.blocks ?? []).length > 0 && (
+      {blocksToShow.length > 0 && (
         <div className="mt-10 space-y-5">
-          {(cfg.blocks ?? []).map((b, i, arr) => (
+          {showingSeed && owner && (
+            <p className="rounded-md border-2 border-dashed border-marker-blue/40 bg-card px-3 py-2 font-label text-xs text-ink-soft">
+              showing example blocks for this streamer — add or edit a block below to make this page truly yours.
+            </p>
+          )}
+          {blocksToShow.map((b, i, arr) => (
             <div key={b.id} className="relative">
               <BlockRenderer block={b} />
-              {owner && (
+              {owner && !showingSeed && (
                 <BlockOwnerControls
                   block={b}
                   onChange={(nb) => upsertBlock(base.handle, nb)}
@@ -184,12 +213,22 @@ function StreamerPage() {
               )}
             </div>
           ))}
+          {showingSeed && owner && (
+            <button
+              onClick={() => {
+                for (const b of blocksToShow) upsertBlock(base.handle, b);
+              }}
+              className="rotate-doodle-1 rounded-md border-2 border-ink bg-marker-green px-3 py-1.5 font-hand text-xl text-paper shadow-sticker"
+            >
+              ↓ copy these examples into my page
+            </button>
+          )}
         </div>
       )}
       {owner && (
         <div className="mt-6 flex flex-wrap items-center gap-2 rounded-md border-2 border-dashed border-marker-blue/50 bg-card p-3">
           <span className="font-label text-xs uppercase text-ink-soft">+ add block:</span>
-          {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch"] as BlockKind[]).map((k) => (
+          {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch","socials","countdown","testimonials"] as BlockKind[]).map((k) => (
             <button key={k} onClick={() => upsertBlock(base.handle, newBlock(k))} className="rounded-md border-2 border-ink bg-paper px-2 py-1 font-hand text-base text-ink hover:bg-marker-yellow">{k}</button>
           ))}
         </div>
