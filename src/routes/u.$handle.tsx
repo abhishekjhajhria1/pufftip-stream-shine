@@ -149,7 +149,7 @@ function StreamerPage() {
               </div>
               {base.achievements && base.achievements.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {base.achievements.map((a, i) => (
+                  {base.achievements.map((a: { emoji: string; label: string }, i: number) => (
                     <span
                       key={a.label}
                       className="rounded-full border-2 border-dashed border-ink/40 bg-paper px-2.5 py-0.5 font-label text-xs text-ink"
