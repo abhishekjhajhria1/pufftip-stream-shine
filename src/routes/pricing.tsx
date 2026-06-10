@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { PaperPage, WashiTape, Highlight, Stamp, StickyNote, MarkerUnderline } from "@/components/notebook/primitives";
 
 export const Route = createFileRoute("/pricing")({
@@ -14,6 +15,35 @@ export const Route = createFileRoute("/pricing")({
 });
 
 function Pricing() {
+  const navigate = useNavigate();
+  const [modal, setModal] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [acceptedAt, setAcceptedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const at = localStorage.getItem("pufftip_tnc_accepted_at");
+      if (at) { setAcceptedAt(at); setAgreed(true); }
+    } catch {}
+  }, []);
+
+  function openCheckout() {
+    if (acceptedAt) {
+      navigate({ to: "/explore" });
+    } else {
+      setModal(true);
+    }
+  }
+
+  function confirm() {
+    if (!agreed) return;
+    const now = new Date().toISOString();
+    try { localStorage.setItem("pufftip_tnc_accepted_at", now); } catch {}
+    setAcceptedAt(now);
+    setModal(false);
+    navigate({ to: "/explore" });
+  }
+
   return (
     <PaperPage className="pt-10 pb-12">
       <div className="relative">
@@ -107,9 +137,66 @@ function Pricing() {
           <div className="font-hand text-3xl">your math, no surprises.</div>
         </StickyNote>
         <div className="mt-6">
-          <Link to="/explore" className="rounded-md border-2 border-ink bg-marker-red px-5 py-2.5 font-hand text-2xl text-paper shadow-sticker">find a streamer →</Link>
+          <button onClick={openCheckout} className="rotate-doodle-1 rounded-md border-2 border-ink bg-marker-red px-5 py-2.5 font-hand text-2xl text-paper shadow-sticker">
+            i'm in — find a streamer →
+          </button>
+          {acceptedAt && (
+            <div className="mt-3 font-label text-xs text-ink-soft">
+              you agreed to the terms on {new Date(acceptedAt).toLocaleDateString()} · thanks for keeping it tidy.
+            </div>
+          )}
         </div>
       </div>
+
+      {modal && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-ink/50 p-4" onClick={() => setModal(false)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-[min(620px,calc(100vw-2rem))] rounded-xl bg-card p-6 shadow-paper"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="font-hand text-4xl text-ink">the napkin contract</div>
+                <p className="mt-1 font-label text-sm text-ink-soft">short, plain, no lawyer voice. signed once.</p>
+              </div>
+              <button onClick={() => setModal(false)} className="font-hand text-2xl text-ink-soft">✕</button>
+            </div>
+
+            <div className="mt-4 max-h-[44vh] space-y-3 overflow-auto rounded-md border-2 border-dashed border-ink/30 bg-paper p-4 font-label text-sm text-ink">
+              <p><strong className="font-hand text-xl">1. the fee.</strong> pufftip takes <strong>1.5%</strong> of every tip. that's it. no subscriptions, no setup, no surprise charges.</p>
+              <p><strong className="font-hand text-xl">2. your money.</strong> tips land in your connected wallet directly. we never custody your funds. solana network fees apply (fractions of a cent).</p>
+              <p><strong className="font-hand text-xl">3. be kind.</strong> no harassment, no doxxing, no illegal content, no sanctioned regions. we reserve the right to remove pages that break this — yelling at a referee is fine, yelling at a person is not.</p>
+              <p><strong className="font-hand text-xl">4. taxes are yours.</strong> we hand you a CSV. what your country does with it is between you and your accountant.</p>
+              <p><strong className="font-hand text-xl">5. demo mode.</strong> the SOL balance shown in this preview is fake. nothing here moves real money until you connect a real wallet on the live product.</p>
+              <p><strong className="font-hand text-xl">6. changes.</strong> if we change the deal in your disfavor, we tell you 30 days ahead. you can leave anytime, no clawback.</p>
+              <p><strong className="font-hand text-xl">7. the vibe.</strong> we're a small team. if something feels broken or unfair, email us at <em>hello@pufftip.app</em> and we'll actually reply.</p>
+            </div>
+
+            <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-md border-2 border-dashed border-ink/40 bg-paper p-3">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-1 size-5 cursor-pointer accent-marker-red"
+              />
+              <span className="font-label text-sm text-ink">
+                i read the napkin and i'm cool with it. (you can revisit this any time on the pricing page.)
+              </span>
+            </label>
+
+            <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+              <button onClick={() => setModal(false)} className="font-label text-sm text-ink-soft underline">nope, not yet</button>
+              <button
+                onClick={confirm}
+                disabled={!agreed}
+                className="rotate-doodle-1 rounded-md border-2 border-ink bg-marker-green px-4 py-2 font-hand text-2xl text-paper shadow-sticker disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                ✎ sign the napkin
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PaperPage>
   );
 }
