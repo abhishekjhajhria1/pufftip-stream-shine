@@ -375,6 +375,52 @@ function BlockEditor({ block, onChange, onRemove, onUp, onDown, isFirst, isLast 
           <button onClick={() => onChange({ ...block, items: [...block.items, { name: "new item", emoji: "🎁", price: "0.1 SOL" }] })} className="font-label text-xs text-ink-soft underline">+ item</button>
         </div>
       )}
+
+      {block.kind === "socials" && (
+        <div className="mt-2 space-y-1">
+          {block.items.map((it, i) => (
+            <div key={i} className="grid grid-cols-[7rem_1fr_2fr_auto] gap-1">
+              <select className={input} value={it.platform} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, platform: e.target.value as typeof it.platform } : x) })}>
+                {(["twitch","youtube","twitter","instagram","tiktok","discord","kick","github"] as const).map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <input className={input} placeholder="@handle" value={it.handle} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, handle: e.target.value } : x) })} />
+              <input className={input} placeholder="https://" value={it.url} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, url: e.target.value } : x) })} />
+              <button onClick={() => onChange({ ...block, items: block.items.filter((_, j) => i !== j) })} className="px-2 font-label text-xs text-marker-red">×</button>
+            </div>
+          ))}
+          <button onClick={() => onChange({ ...block, items: [...block.items, { platform: "twitch", handle: "yourname", url: "https://twitch.tv/yourname" }] })} className="font-label text-xs text-ink-soft underline">+ social</button>
+        </div>
+      )}
+
+      {block.kind === "countdown" && (
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <input className={input} placeholder="label (e.g. doors open 8pm)" value={block.label} onChange={(e) => onChange({ ...block, label: e.target.value })} />
+          <input
+            type="datetime-local"
+            className={input}
+            value={(() => { try { return new Date(block.targetISO).toISOString().slice(0,16); } catch { return ""; } })()}
+            onChange={(e) => { const d = new Date(e.target.value); if (!isNaN(d.getTime())) onChange({ ...block, targetISO: d.toISOString() }); }}
+          />
+        </div>
+      )}
+
+      {block.kind === "testimonials" && (
+        <div className="mt-2 space-y-2">
+          {block.items.map((it, i) => (
+            <div key={i} className="rounded border border-dashed border-ink/30 p-2">
+              <div className="grid grid-cols-[1fr_8rem] gap-1">
+                <input className={input} placeholder="from (name)" value={it.from} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, from: e.target.value } : x) })} />
+                <select className={input} value={it.color ?? "yellow"} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, color: e.target.value as "yellow"|"pink"|"teal"|"green" } : x) })}>
+                  {(["yellow","pink","teal","green"] as const).map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <textarea className={input + " mt-1"} placeholder="quote" value={it.quote} onChange={(e) => onChange({ ...block, items: block.items.map((x, j) => i === j ? { ...x, quote: e.target.value } : x) })} />
+              <button onClick={() => onChange({ ...block, items: block.items.filter((_, j) => i !== j) })} className="font-label text-xs text-marker-red">remove</button>
+            </div>
+          ))}
+          <button onClick={() => onChange({ ...block, items: [...block.items, { from: "fan", quote: "they're the best.", color: "yellow" }] })} className="font-label text-xs text-ink-soft underline">+ testimonial</button>
+        </div>
+      )}
     </div>
   );
 }
