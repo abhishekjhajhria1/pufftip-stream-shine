@@ -175,6 +175,15 @@ export function BlockRenderer({ block }: { block: Block }) {
           </div>
         </div>
       );
+
+    case "newsletter":
+      return <NewsletterBlock block={block} />;
+
+    case "embed":
+      return <EmbedBlock block={block} />;
+
+    case "guestbook":
+      return <GuestbookBlock block={block} />;
   }
 }
 
@@ -318,5 +327,134 @@ function PollBlock({ block }: { block: Extract<Block, { kind: "poll" }> }) {
       </div>
       {chosen && <p className="mt-2 font-label text-xs text-ink-soft">thanks for voting — results above.</p>}
     </Sketch>
+  );
+}
+function NewsletterBlock({ block }: { block: Extract<Block, { kind: "newsletter" }> }) {
+  const [email, setEmail] = useState("");
+  const [done, setDone] = useState(false);
+  return (
+    <div className="paper-card relative rounded-xl p-5">
+      <WashiTape color="teal" rotate={-6} className="-top-2 right-8" style={{ width: "5rem" }} />
+      <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>{block.title}</MarkerUnderline></h3>
+      <p className="mt-1 font-label text-base text-ink">{block.pitch}</p>
+      {done ? (
+        <p className="mt-3 font-hand text-2xl text-marker-green">✓ on the list. check your inbox.</p>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!/^\S+@\S+\.\S+$/.test(email)) return;
+            setDone(true);
+          }}
+          className="mt-3 flex flex-col gap-2 sm:flex-row"
+        >
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={block.placeholder}
+            className="flex-1 rounded-md border-2 border-ink bg-paper px-3 py-2 font-label text-base text-ink outline-none focus:border-marker-red"
+          />
+          <button type="submit" className="rotate-doodle-1 rounded-md border-2 border-ink bg-marker-yellow px-4 py-2 font-hand text-xl text-ink shadow-sticker hover:bg-marker-red hover:text-paper">
+            {block.cta} →
+          </button>
+        </form>
+      )}
+      <p className="mt-2 font-label text-[11px] italic text-ink-soft">no spam. unsubscribe with one click.</p>
+    </div>
+  );
+}
+
+function EmbedBlock({ block }: { block: Extract<Block, { kind: "embed" }> }) {
+  const src = (() => {
+    const s = (block.src || "").trim();
+    switch (block.provider) {
+      case "twitch": {
+        const channel = s.replace(/^https?:\/\/(www\.)?twitch\.tv\//, "").replace(/\/$/, "") || "twitch";
+        const parent = typeof window !== "undefined" ? window.location.hostname : "lovable.app";
+        return `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parent}&muted=true`;
+      }
+      case "youtube": {
+        const m = s.match(/(?:youtu\.be\/|v=|\/embed\/)([A-Za-z0-9_-]{6,})/);
+        const id = m ? m[1] : s;
+        return `https://www.youtube.com/embed/${id}`;
+      }
+      case "spotify": {
+        const m = s.match(/spotify\.com\/(track|playlist|album|episode|show)\/([A-Za-z0-9]+)/);
+        if (m) return `https://open.spotify.com/embed/${m[1]}/${m[2]}`;
+        return `https://open.spotify.com/embed/playlist/${s}`;
+      }
+      case "soundcloud":
+        return `https://w.soundcloud.com/player/?url=${encodeURIComponent(s)}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=true`;
+      default:
+        return s;
+    }
+  })();
+  return (
+    <div className="paper-card rounded-xl p-3">
+      <div className="flex items-baseline justify-between px-2 pt-1">
+        <div className="font-hand text-2xl text-ink">{block.title}</div>
+        <span className="font-label text-[11px] uppercase tracking-wider text-ink-soft">{block.provider}</span>
+      </div>
+      <div className={`mt-2 overflow-hidden rounded-md border-2 border-ink ${block.provider === "spotify" || block.provider === "soundcloud" ? "h-[152px]" : "aspect-video"}`}>
+        <iframe
+          src={src}
+          title={block.title}
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+          allowFullScreen
+          className="h-full w-full"
+        />
+      </div>
+      {block.caption && <p className="mt-2 px-2 font-label text-sm text-ink-soft">{block.caption}</p>}
+    </div>
+  );
+}
+
+function GuestbookBlock({ block }: { block: Extract<Block, { kind: "guestbook" }> }) {
+  const [name, setName] = useState("");
+  const [note, setNote] = useState("");
+  const [entries, setEntries] = useState<{ from: string; note: string }[]>([]);
+  const key = `pufftip-guestbook-${block.id}`;
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(key);
+      if (raw) setEntries(JSON.parse(raw));
+    } catch { /* noop */ }
+  }, [key]);
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedFrom = name.trim().slice(0, 40) || "anon";
+    const trimmedNote = note.trim().slice(0, 200);
+    if (!trimmedNote) return;
+    const next = [{ from: trimmedFrom, note: trimmedNote }, ...entries].slice(0, 12);
+    setEntries(next);
+    setName("");
+    setNote("");
+    try { window.localStorage.setItem(key, JSON.stringify(next)); } catch { /* noop */ }
+  };
+  const shown = entries.length > 0 ? entries : block.samples;
+  return (
+    <div className="paper-card relative rounded-xl p-5">
+      <WashiTape color="yellow" rotate={-5} className="-top-2 left-6" style={{ width: "6rem" }} />
+      <h3 className="font-hand text-3xl text-ink"><MarkerUnderline>{block.title}</MarkerUnderline></h3>
+      <p className="mt-1 font-label text-base text-ink">{block.prompt}</p>
+      <form onSubmit={submit} className="mt-3 grid gap-2 sm:grid-cols-[10rem_1fr_auto]">
+        <input value={name} onChange={(e) => setName(e.target.value)} maxLength={40} placeholder="your name (or anon)" className="rounded-md border-2 border-ink bg-paper px-3 py-2 font-label text-base text-ink outline-none focus:border-marker-red" />
+        <input value={note} onChange={(e) => setNote(e.target.value)} maxLength={200} placeholder="a kind note…" className="rounded-md border-2 border-ink bg-paper px-3 py-2 font-label text-base text-ink outline-none focus:border-marker-red" />
+        <button type="submit" className="rotate-doodle-2 rounded-md border-2 border-ink bg-marker-yellow px-4 py-2 font-hand text-xl text-ink shadow-sticker hover:bg-marker-red hover:text-paper">{block.cta}</button>
+      </form>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {shown.map((it, i) => (
+          <StickyNote key={i} color={(["yellow","pink","teal","green"] as const)[i % 4]} rotate={(i % 2 === 0 ? -1.2 : 1.2)} className="break-words">
+            <p className="font-hand text-xl leading-tight text-ink">“{it.note}”</p>
+            <p className="mt-1 font-label text-[11px] text-ink-soft">— @{it.from}</p>
+          </StickyNote>
+        ))}
+      </div>
+      {entries.length > 0 && (
+        <button onClick={() => { setEntries([]); try { window.localStorage.removeItem(key); } catch { /* noop */ } }} className="mt-3 font-label text-[11px] text-marker-red underline">clear my entries</button>
+      )}
+    </div>
   );
 }

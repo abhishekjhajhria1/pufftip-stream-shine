@@ -14,7 +14,10 @@ export type BlockKind =
   | "merch"
   | "socials"
   | "countdown"
-  | "testimonials";
+  | "testimonials"
+  | "newsletter"
+  | "embed"
+  | "guestbook";
 
 export type Block =
   | { id: string; kind: "announcement"; title: string; body: string; color: "yellow" | "pink" | "teal" | "green" }
@@ -29,7 +32,10 @@ export type Block =
   | { id: string; kind: "merch"; title: string; items: { name: string; emoji: string; price: string; url?: string }[] }
   | { id: string; kind: "socials"; title: string; items: { platform: "twitch" | "youtube" | "twitter" | "instagram" | "tiktok" | "discord" | "kick" | "github"; handle: string; url: string }[] }
   | { id: string; kind: "countdown"; title: string; label: string; targetISO: string }
-  | { id: string; kind: "testimonials"; title: string; items: { from: string; quote: string; color?: "yellow" | "pink" | "teal" | "green" }[] };
+  | { id: string; kind: "testimonials"; title: string; items: { from: string; quote: string; color?: "yellow" | "pink" | "teal" | "green" }[] }
+  | { id: string; kind: "newsletter"; title: string; pitch: string; cta: string; placeholder: string }
+  | { id: string; kind: "embed"; title: string; provider: "twitch" | "youtube" | "spotify" | "soundcloud" | "iframe"; src: string; caption?: string }
+  | { id: string; kind: "guestbook"; title: string; prompt: string; cta: string; samples: { from: string; note: string }[] };
 
 export type SectionKey = "tipWall" | "topFans" | "quickTip" | "alsoOn";
 
@@ -265,6 +271,30 @@ export function newBlock(kind: BlockKind): Block {
           { from: "miso",   quote: "best chill streams on the internet, no notes.", color: "yellow" },
           { from: "ghostr", quote: "i came for the lo-fi, stayed for the rambling.", color: "pink" },
           { from: "anon",   quote: "tipped once, became a person.", color: "teal" },
+        ],
+      };
+    case "newsletter":
+      return {
+        id, kind, title: "join the mailing list",
+        pitch: "monthly-ish dispatch: stream dates, song picks, behind-the-scenes mess.",
+        cta: "sign me up",
+        placeholder: "you@inbox.com",
+      };
+    case "embed":
+      return {
+        id, kind, title: "live & loud",
+        provider: "twitch",
+        src: "yourname",
+        caption: "drop in if i'm live, lurk if i'm not.",
+      };
+    case "guestbook":
+      return {
+        id, kind, title: "sign the guestbook",
+        prompt: "leave a note. say hi. tell me what you're working on.",
+        cta: "scribble a note",
+        samples: [
+          { from: "noodle", note: "first time here. love the vibe." },
+          { from: "ren", note: "the friday lo-fi sets carried me through finals." },
         ],
       };
   }
