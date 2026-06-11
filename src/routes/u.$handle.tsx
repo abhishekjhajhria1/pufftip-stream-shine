@@ -126,18 +126,40 @@ function StreamerPage() {
             <Polaroid hue={streamer.avatarHue} emoji={avatarEmoji} label={streamer.name} caption={`@${streamer.handle}`} size={180} rotate={-3} />
             <div className="flex-1">
               <div className="font-label text-sm text-ink-soft">
-                streamer · <InlineEdit value={streamer.game} editable={owner} onChange={(v) => update(base.handle, { game: v })} />
+                streamer · <InlineEdit
+                  value={streamer.game}
+                  editable={owner}
+                  onChange={(v) => update(base.handle, { game: v })}
+                  maxLength={40}
+                  suggestions={["just chatting","variety gaming","lo-fi & code","art & illustration","cooking IRL","music production"]}
+                  hint="what you mostly stream — a vibe, not a title"
+                />
               </div>
               <h1 className="mt-1 font-hand text-6xl text-ink sm:text-7xl">
                 <Highlight>
-                  <InlineEdit value={streamer.name} editable={owner} onChange={(v) => update(base.handle, { name: v })} />
+                  <InlineEdit value={streamer.name} editable={owner} onChange={(v) => update(base.handle, { name: v })} maxLength={32} hint="your display name — keep it short and punchy" />
                 </Highlight>
               </h1>
               <p className="mt-1 font-hand text-2xl text-ink-soft">
-                <InlineEdit value={streamer.tagline} editable={owner} onChange={(v) => update(base.handle, { tagline: v })} />
+                <InlineEdit
+                  value={streamer.tagline}
+                  editable={owner}
+                  onChange={(v) => update(base.handle, { tagline: v })}
+                  maxLength={80}
+                  suggestions={["lo-fi nights, loud opinions","cozy gamer, big feelings","midnight ramen + midnight code","building things, vibing loud"]}
+                  hint="one line. what you're about."
+                />
               </p>
               <p className="mt-3 max-w-xl font-label text-lg text-ink">
-                <InlineEdit value={streamer.bio} editable={owner} onChange={(v) => update(base.handle, { bio: v })} multiline />
+                <InlineEdit
+                  value={streamer.bio}
+                  editable={owner}
+                  onChange={(v) => update(base.handle, { bio: v })}
+                  multiline
+                  maxLength={280}
+                  suggestions={["streamer + maker. tips fund snacks, song requests, and the occasional new mic.","welcome in. grab a seat, leave a note, tip if it hits."]}
+                  hint="2–3 sentences. cmd/ctrl+enter to save."
+                />
               </p>
               <div className="mt-4 flex flex-wrap gap-4 font-label text-sm text-ink-soft">
                 <span><strong className="font-mono text-ink">{streamer.totalReceived.toFixed(1)}</strong> SOL received</span>
