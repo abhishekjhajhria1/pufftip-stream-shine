@@ -421,6 +421,40 @@ function BlockEditor({ block, onChange, onRemove, onUp, onDown, isFirst, isLast 
           <button onClick={() => onChange({ ...block, items: [...block.items, { from: "fan", quote: "they're the best.", color: "yellow" }] })} className="font-label text-xs text-ink-soft underline">+ testimonial</button>
         </div>
       )}
+
+      {block.kind === "newsletter" && (
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <input className={input} placeholder="pitch (why subscribe)" value={block.pitch} onChange={(e) => onChange({ ...block, pitch: e.target.value })} />
+          <input className={input} placeholder="placeholder (e.g. you@inbox.com)" value={block.placeholder} onChange={(e) => onChange({ ...block, placeholder: e.target.value })} />
+          <input className={input + " sm:col-span-2"} placeholder="button label" value={block.cta} onChange={(e) => onChange({ ...block, cta: e.target.value })} />
+        </div>
+      )}
+
+      {block.kind === "embed" && (
+        <div className="mt-2 grid gap-2 sm:grid-cols-[10rem_1fr]">
+          <select className={input} value={block.provider} onChange={(e) => onChange({ ...block, provider: e.target.value as typeof block.provider })}>
+            {(["twitch","youtube","spotify","soundcloud","iframe"] as const).map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+          <input className={input} placeholder={block.provider === "twitch" ? "twitch channel (e.g. yourname)" : block.provider === "youtube" ? "youtube video id or url" : block.provider === "spotify" ? "spotify share url" : block.provider === "soundcloud" ? "soundcloud track url" : "full iframe src url"} value={block.src} onChange={(e) => onChange({ ...block, src: e.target.value })} />
+          <input className={input + " sm:col-span-2"} placeholder="caption (optional)" value={block.caption ?? ""} onChange={(e) => onChange({ ...block, caption: e.target.value })} />
+        </div>
+      )}
+
+      {block.kind === "guestbook" && (
+        <div className="mt-2 space-y-2">
+          <input className={input} placeholder="prompt (what should fans write?)" value={block.prompt} onChange={(e) => onChange({ ...block, prompt: e.target.value })} />
+          <input className={input} placeholder="button label" value={block.cta} onChange={(e) => onChange({ ...block, cta: e.target.value })} />
+          <div className="font-label text-xs uppercase text-ink-soft">starter notes</div>
+          {block.samples.map((it, i) => (
+            <div key={i} className="grid grid-cols-[8rem_1fr_auto] gap-1">
+              <input className={input} placeholder="from" value={it.from} onChange={(e) => onChange({ ...block, samples: block.samples.map((x, j) => i === j ? { ...x, from: e.target.value } : x) })} />
+              <input className={input} placeholder="note" value={it.note} onChange={(e) => onChange({ ...block, samples: block.samples.map((x, j) => i === j ? { ...x, note: e.target.value } : x) })} />
+              <button onClick={() => onChange({ ...block, samples: block.samples.filter((_, j) => i !== j) })} className="font-label text-xs text-marker-red">x</button>
+            </div>
+          ))}
+          <button onClick={() => onChange({ ...block, samples: [...block.samples, { from: "fan", note: "say something nice." }] })} className="font-label text-xs text-ink-soft underline">+ starter note</button>
+        </div>
+      )}
     </div>
   );
 }

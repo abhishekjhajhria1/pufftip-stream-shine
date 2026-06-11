@@ -228,7 +228,7 @@ function StreamerPage() {
       {owner && (
         <div className="mt-6 flex flex-wrap items-center gap-2 rounded-md border-2 border-dashed border-marker-blue/50 bg-card p-3">
           <span className="font-label text-xs uppercase text-ink-soft">+ add block:</span>
-          {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch","socials","countdown","testimonials"] as BlockKind[]).map((k) => (
+          {(["announcement","schedule","links","faq","video","sponsors","text","poll","gallery","merch","socials","countdown","testimonials","newsletter","embed","guestbook"] as BlockKind[]).map((k) => (
             <button key={k} onClick={() => upsertBlock(base.handle, newBlock(k))} className="rounded-md border-2 border-ink bg-paper px-2 py-1 font-hand text-base text-ink hover:bg-marker-yellow">{k}</button>
           ))}
         </div>
