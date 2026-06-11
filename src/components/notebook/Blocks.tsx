@@ -175,6 +175,15 @@ export function BlockRenderer({ block }: { block: Block }) {
           </div>
         </div>
       );
+
+    case "newsletter":
+      return <NewsletterBlock block={block} />;
+
+    case "embed":
+      return <EmbedBlock block={block} />;
+
+    case "guestbook":
+      return <GuestbookBlock block={block} />;
   }
 }
 
