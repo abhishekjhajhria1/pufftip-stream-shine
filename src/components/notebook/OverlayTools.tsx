@@ -1,11 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useDemoWallet } from "@/lib/useDemoWallet";
 import { MarkerUnderline, Sketch, Stamp } from "./primitives";
 
 /* Streamer-side tools: copy overlay URL, fire test tip, grab embed snippet. */
 export function OverlayTools({ handle }: { handle: string }) {
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://pufftip.com";
+  // Defer URL generation until after hydration so SSR & client markup match.
+  const [origin, setOrigin] = useState<string>("https://pufftip.com");
+  useEffect(() => { setOrigin(window.location.origin); }, []);
   const overlayUrl = `${origin}/overlay/${handle}`;
   const profileUrl = `${origin}/u/${handle}`;
   const embedSnippet = `<iframe src="${profileUrl}" width="420" height="640" style="border:0;border-radius:16px;overflow:hidden" title="tip @${handle} on pufftip"></iframe>`;
