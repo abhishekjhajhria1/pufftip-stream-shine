@@ -228,12 +228,15 @@ function SocialsBlock({ block }: { block: Extract<Block, { kind: "socials" }> })
 }
 
 function CountdownBlock({ block }: { block: Extract<Block, { kind: "countdown" }> }) {
-  const [now, setNow] = useState(() => Date.now());
+  // Init with the target time so SSR and first client render produce identical
+  // markup (all-zero cells). Real "now" kicks in after mount.
+  const target = new Date(block.targetISO).getTime();
+  const [now, setNow] = useState(target);
   useEffect(() => {
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  const target = new Date(block.targetISO).getTime();
   const diff = Math.max(0, target - now);
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
@@ -270,12 +273,16 @@ function PollBlock({ block }: { block: Extract<Block, { kind: "poll" }> }) {
   // For demo simplicity we keep voting client-only and update local copy.
   // To stay reactive we track the chosen option in localStorage by block id.
   const key = `pufftip-poll-${block.id}`;
-  const chosen = typeof window !== "undefined" ? window.localStorage.getItem(key) : null;
+  const [chosen, setChosen] = useState<string | null>(null);
+  useEffect(() => {
+    try { setChosen(window.localStorage.getItem(key)); } catch { /* noop */ }
+  }, [key]);
   const total = block.options.reduce((a, b) => a + b.votes, 0) || 1;
 
   const vote = (label: string) => {
     if (chosen) return;
     window.localStorage.setItem(key, label);
+    setChosen(label);
     const next = {
       ...block,
       options: block.options.map((o) => (o.label === label ? { ...o, votes: o.votes + 1 } : o)),
@@ -367,13 +374,14 @@ function NewsletterBlock({ block }: { block: Extract<Block, { kind: "newsletter"
 }
 
 function EmbedBlock({ block }: { block: Extract<Block, { kind: "embed" }> }) {
+  const [parentHost, setParentHost] = useState<string>("lovable.app");
+  useEffect(() => { setParentHost(window.location.hostname); }, []);
   const src = (() => {
     const s = (block.src || "").trim();
     switch (block.provider) {
       case "twitch": {
         const channel = s.replace(/^https?:\/\/(www\.)?twitch\.tv\//, "").replace(/\/$/, "") || "twitch";
-        const parent = typeof window !== "undefined" ? window.location.hostname : "lovable.app";
-        return `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parent}&muted=true`;
+        return `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parentHost}&muted=true`;
       }
       case "youtube": {
         const m = s.match(/(?:youtu\.be\/|v=|\/embed\/)([A-Za-z0-9_-]{6,})/);
