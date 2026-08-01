@@ -75,9 +75,7 @@ function BuilderPage() {
             className="rounded-2xl border-2 border-ink bg-paper p-5 shadow-sticker"
           >
             <div className="flex items-start gap-4">
-              <Polaroid caption={`@${handle}`} hue={cfg.avatarHue ?? 25} rotate={-3}>
-                <div className="grid h-28 w-28 place-items-center text-5xl">{cfg.avatarEmoji ?? "🎧"}</div>
-              </Polaroid>
+              <Polaroid caption={`@${handle}`} hue={cfg.avatarHue ?? 25} rotate={-3} size={130} emoji={cfg.avatarEmoji ?? "🎧"} />
               <div className="min-w-0">
                 <h2 style={{ fontFamily: font }} className="text-4xl text-ink">{cfg.name ?? handle}</h2>
                 <p className="font-label text-base text-ink-soft">{cfg.tagline ?? "your one-line pitch goes here"}</p>
