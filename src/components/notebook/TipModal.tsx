@@ -16,7 +16,7 @@ export function TipModal({
   onClose: () => void;
   context?: string;
 }) {
-  const cfg = useStreamerConfig((s) => getConfig(s.configs, streamer.handle));
+  const cfg = useConfig(streamer.handle);
   const quick = cfg.quickAmounts && cfg.quickAmounts.length ? cfg.quickAmounts : [0.1, 0.5, 1, 2.5];
   const minTip = cfg.minTip ?? 0.01;
   const [amount, setAmount] = useState(quick[1] ?? quick[0] ?? 0.5);

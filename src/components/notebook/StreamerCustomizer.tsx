@@ -27,7 +27,7 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 const EMOJI_CHOICES = ["🎸","👻","💻","🍜","🚀","📷","🎮","🎤","🎧","🧠","🔥","✨","🌈","🍕","☕","🐈","🧪","🎨","🛹","📚"];
 
 export function StreamerCustomizer({ handle }: { handle: string }) {
-  const cfg = useStreamerConfig((s) => getConfig(s.configs, handle));
+  const cfg = useConfig(handle);
   const update = useStreamerConfig((s) => s.update);
   const upsertBlock = useStreamerConfig((s) => s.upsertBlock);
   const removeBlock = useStreamerConfig((s) => s.removeBlock);
