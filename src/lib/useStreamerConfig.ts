@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -298,4 +299,9 @@ export function newBlock(kind: BlockKind): Block {
         ],
       };
   }
+}
+/** Stable selector: subscribes to the raw stored entry, memoizes the merged config. */
+export function useConfig(handle: string): StreamerConfig {
+  const raw = useStreamerConfig((s) => s.configs[handle]);
+  return useMemo(() => ({ ...DEFAULT_CONFIG, ...(raw ?? {}) }), [raw]);
 }

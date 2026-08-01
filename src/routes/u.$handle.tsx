@@ -4,7 +4,7 @@ import { PaperPage, Polaroid, WashiTape, StickyNote, Highlight, MarkerUnderline,
 import { TipModal } from "@/components/notebook/TipModal";
 import { getStreamer, STREAMERS } from "@/lib/mockData";
 import { useDemoWallet } from "@/lib/useDemoWallet";
-import { DEFAULT_SECTIONS, getConfig, HEADING_FONTS, newBlock, PAPER_TONES, useStreamerConfig, type Block, type BlockKind, type SectionKey } from "@/lib/useStreamerConfig";
+import { DEFAULT_SECTIONS, useConfig, HEADING_FONTS, newBlock, PAPER_TONES, useStreamerConfig, type Block, type BlockKind, type SectionKey } from "@/lib/useStreamerConfig";
 import { InlineEdit } from "@/components/notebook/InlineEdit";
 import { BlockRenderer } from "@/components/notebook/Blocks";
 import { SEED_BLOCKS } from "@/lib/seedBlocks";
@@ -48,9 +48,9 @@ const EMOJIS: Record<string, string> = {
 };
 
 function StreamerPage() {
-  const data = Route.useLoaderData();
-  const base = data!.streamer;
-  const cfg = useStreamerConfig((s) => getConfig(s.configs, base.handle));
+  const { handle } = Route.useParams();
+  const base = getStreamer(handle)!;
+  const cfg = useConfig(base.handle);
   const update = useStreamerConfig((s) => s.update);
   const upsertBlock = useStreamerConfig((s) => s.upsertBlock);
   const removeBlock = useStreamerConfig((s) => s.removeBlock);

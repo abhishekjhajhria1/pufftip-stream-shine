@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   useStreamerConfig,
-  getConfig,
+  useConfig,
   newBlock,
   PAPER_TONES,
   HEADING_FONTS,
@@ -27,7 +27,7 @@ const SECTION_LABELS: Record<SectionKey, string> = {
 const EMOJI_CHOICES = ["🎸","👻","💻","🍜","🚀","📷","🎮","🎤","🎧","🧠","🔥","✨","🌈","🍕","☕","🐈","🧪","🎨","🛹","📚"];
 
 export function StreamerCustomizer({ handle }: { handle: string }) {
-  const cfg = useStreamerConfig((s) => getConfig(s.configs, handle));
+  const cfg = useConfig(handle);
   const update = useStreamerConfig((s) => s.update);
   const upsertBlock = useStreamerConfig((s) => s.upsertBlock);
   const removeBlock = useStreamerConfig((s) => s.removeBlock);
@@ -47,6 +47,7 @@ export function StreamerCustomizer({ handle }: { handle: string }) {
           <p className="font-label text-sm text-ink-soft">editing as <strong>@{handle}</strong> · saved in your browser</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {base && (
           <Link
             to="/u/$handle"
             params={{ handle }}
@@ -55,6 +56,7 @@ export function StreamerCustomizer({ handle }: { handle: string }) {
           >
             open & inline edit →
           </Link>
+          )}
           <button onClick={() => { if (confirm("reset all customizations for @" + handle + "?")) reset(handle); }} className="rounded-md border-2 border-dashed border-ink/40 px-3 py-1.5 font-label text-sm text-ink-soft hover:border-marker-red hover:text-marker-red">
             reset
           </button>

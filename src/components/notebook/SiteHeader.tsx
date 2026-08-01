@@ -7,6 +7,7 @@ import { useTheme } from "@/lib/useTheme";
 const NAV = [
   { to: "/", label: "home" },
   { to: "/explore", label: "explore" },
+  { to: "/builder", label: "build a page" },
   { to: "/dashboard", label: "dashboard" },
   { to: "/obs", label: "obs setup" },
   { to: "/pricing", label: "fees" },
