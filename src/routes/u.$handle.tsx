@@ -48,8 +48,8 @@ const EMOJIS: Record<string, string> = {
 };
 
 function StreamerPage() {
-  const data = Route.useLoaderData();
-  const base = data!.streamer;
+  const { handle } = Route.useParams();
+  const base = getStreamer(handle)!;
   const cfg = useConfig(base.handle);
   const update = useStreamerConfig((s) => s.update);
   const upsertBlock = useStreamerConfig((s) => s.upsertBlock);
