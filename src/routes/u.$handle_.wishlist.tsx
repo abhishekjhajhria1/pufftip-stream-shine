@@ -56,7 +56,7 @@ function ProgressBar({ pct }: { pct: number }) {
 function WishlistPage() {
   const { handle } = Route.useParams();
   const streamer = getStreamer(handle)!;
-  const wishlist: WishlistItem[] = getWishlist(handle);
+  const wishlist: WishlistItem[] = WISHLISTS[handle] ?? [];
   const [openTip, setOpenTip] = useState(false);
   const [activeItem, setActiveItem] = useState<WishlistItem | null>(null);
   const { sentCount } = useDemoWallet();
