@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDemoWallet } from "@/lib/useDemoWallet";
 import { StickyNote } from "./primitives";
 import type { Streamer } from "@/lib/mockData";
-import { getConfig, useStreamerConfig } from "@/lib/useStreamerConfig";
+import { useConfig, useStreamerConfig } from "@/lib/useStreamerConfig";
 import { PaperBurst } from "./PaperBurst";
 
 export function TipModal({

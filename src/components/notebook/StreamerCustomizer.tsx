@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   useStreamerConfig,
-  getConfig,
+  useConfig,
   newBlock,
   PAPER_TONES,
   HEADING_FONTS,
